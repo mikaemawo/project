@@ -37,3 +37,42 @@ setInterval(() => {
     hideBlocks();
     showBlock(currentIndex);
 }, 3000);
+
+// converter
+
+const somInput = document.querySelector("#som");
+const usdInput = document.querySelector("#usd");
+const francInput = document.querySelector("#franc");
+
+const converter = (element) => {
+    element.oninput = () => {
+        const xhr = new XMLHttpRequest()
+    xhr.open('GET', '../data/converter.json')
+    xhr.setRequestHeader('Content-type', 'application/json')
+    xhr.send()
+
+    xhr.onload = () => {
+        const data = JSON.parse(xhr.response)
+                if (element.id === 'som') {
+                usdInput.value = (element.value / data.usd).toFixed(2);
+                francInput.value = (element.value / data.franc).toFixed(2);
+            } else if (element.id === 'usd') {
+                somInput.value = (element.value * data.usd).toFixed(2);
+                francInput.value = ((element.value * data.usd) / data.franc).toFixed(2);
+            } else if (element.id === 'franc') {
+                usdInput.value = ((element.value * data.franc) / data.usd).toFixed(2);
+                somInput.value = (element.value * data.franc).toFixed(2);
+            }
+
+            if (element.value === '') {
+                somInput.value = '';
+                usdInput.value = '';
+                francInput.value = '';
+            }
+        }
+    }
+}
+
+converter(somInput)
+converter(usdInput)
+converter(francInput)

@@ -73,6 +73,50 @@ const converter = (element) => {
     }
 }
 
-converter(somInput)
-converter(usdInput)
-converter(francInput)
+converter(somInput);
+converter(usdInput);
+converter(francInput);
+
+
+// card switcher
+
+const btnNext = document.querySelector("#btn-next")
+const btnPrev = document.querySelector("#btn-prev")
+const card = document.querySelector(".card")
+let cardId = 1
+
+    function getData(id) {
+        fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+    .then(response => response.json())
+    .then(data => {
+        const {title, id, completed} = data
+        const completedTitle = completed ? 'yes' : 'no'
+        const completedColor = completed ? 'green' : 'red'
+
+        card.innerHTML = `
+        <p> ${title} </p>
+        <p style = "color: ${completedColor}">
+            ${completedTitle}
+        </p>
+        <span>${id}</span>
+        `
+        })
+    }
+
+    btnNext.onclick = () => {
+    cardId = cardId >= 200 ? 1 : cardId + 1;
+    getData(cardId);
+    }
+
+    btnPrev.onclick = () => {
+        cardId = cardId <= 1 ? 200 : cardId - 1;
+        getData(cardId);
+    }
+    getData(cardId);
+
+    function posts() {
+        fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    }
+    posts()

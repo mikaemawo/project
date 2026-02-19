@@ -45,15 +45,17 @@ const usdInput = document.querySelector("#usd");
 const francInput = document.querySelector("#franc");
 
 const converter = (element) => {
-    element.oninput = () => {
-        const xhr = new XMLHttpRequest()
-    xhr.open('GET', '../data/converter.json')
-    xhr.setRequestHeader('Content-type', 'application/json')
-    xhr.send()
+    element.oninput = async () => {
+        try {
+            const response = await fetch('../data/converter.json');
 
-    xhr.onload = () => {
-        const data = JSON.parse(xhr.response)
-                if (element.id === 'som') {
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки converter.json');
+            }
+
+            const data = await response.json();
+
+            if (element.id === 'som') {
                 usdInput.value = (element.value / data.usd).toFixed(2);
                 francInput.value = (element.value / data.franc).toFixed(2);
             } else if (element.id === 'usd') {
@@ -69,54 +71,87 @@ const converter = (element) => {
                 usdInput.value = '';
                 francInput.value = '';
             }
+
+        } catch (error) {
+            console.error('Ошибка:', error);
         }
-    }
-}
+    };
+};
 
 converter(somInput);
 converter(usdInput);
 converter(francInput);
 
 
-// card switcher
+// CARD SWITCHER
 
-const btnNext = document.querySelector("#btn-next")
-const btnPrev = document.querySelector("#btn-prev")
-const card = document.querySelector(".card")
-let cardId = 1
+const btnNext = document.querySelector("#btn-next");
+const btnPrev = document.querySelector("#btn-prev");
+const card = document.querySelector(".card");
+let cardId = 1;
 
-    function getData(id) {
-        fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
-    .then(response => response.json())
-    .then(data => {
-        const {title, id, completed} = data
-        const completedTitle = completed ? 'yes' : 'no'
-        const completedColor = completed ? 'green' : 'red'
+async function getData(id) {
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки TODO');
+        }
+
+        const data = await response.json();
+
+        const { title, id: todoId, completed } = data;
+        const completedTitle = completed ? 'yes' : 'no';
+        const completedColor = completed ? 'green' : 'red';
 
         card.innerHTML = `
-        <p> ${title} </p>
-        <p style = "color: ${completedColor}">
-            ${completedTitle}
-        </p>
-        <span>${id}</span>
-        `
-        })
-    }
+            <p>${title}</p>
+            <p style="color: ${completedColor}">
+                ${completedTitle}
+            </p>
+            <span>${todoId}</span>
+        `;
 
-    btnNext.onclick = () => {
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
+}
+
+btnNext.onclick = () => {
     cardId = cardId >= 200 ? 1 : cardId + 1;
     getData(cardId);
-    }
+};
 
-    btnPrev.onclick = () => {
-        cardId = cardId <= 1 ? 200 : cardId - 1;
-        getData(cardId);
-    }
+btnPrev.onclick = () => {
+    cardId = cardId <= 1 ? 200 : cardId - 1;
     getData(cardId);
+};
 
-    function posts() {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(data => console.log(data))
+getData(cardId);
+
+
+// POSTS
+
+async function posts() {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки posts');
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+    } catch (error) {
+        console.error('Ошибка:', error);
     }
-    posts()
+}
+
+posts();
+
+
+
+
+
+

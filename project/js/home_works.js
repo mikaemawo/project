@@ -74,15 +74,6 @@ btnReset.onclick = () => {
 }
 
 
-const data = new XMLHttpRequest()
-data.open('GET', '../data/characters.json');
-data.setRequestHeader('Content-Type', 'application/json');
-data.send()
-data.onload = () => {
-const characters = JSON.parse(data.response);
-renderCard(characters);
-}
-
 const renderCard = (characters) => {
     const characterList = document.querySelector('.characters-list');
 
@@ -91,22 +82,54 @@ const renderCard = (characters) => {
         div.className = 'character-card';
 
         div.innerHTML = `
-    <div>
-        <div class="character-photo">
-        <img src="${character.photo}" alt="">
-        </div>
-        <h3>${character.name}</h3>
-        <h4>${character.age}</h4x>
-    </div>
-    `;
+            <div>
+                <div class="character-photo">
+                    <img src="${character.photo}" alt="">
+                </div>
+                <h3>${character.name}</h3>
+                <h4>${character.age}</h4>
+            </div>
+        `;
+
         characterList.appendChild(div);
-    })
+    });
+};
+
+async function getCharacters() {
+    try {
+        const response = await fetch('../data/characters.json');
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки characters.json');
+        }
+
+        const characters = await response.json();
+        renderCard(characters);
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
 }
 
-const bio = new XMLHttpRequest()
-bio.open('GET', '../data/bio.json');
-bio.setRequestHeader('Content-Type', 'application/json');
-bio.send()
-bio.onload = () => {
-    console.log(bio.response);
+getCharacters();
+
+
+// ================== FETCH BIO ==================
+
+async function getBio() {
+    try {
+        const response = await fetch('../data/bio.json');
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки bio.json');
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
 }
+
+getBio();
